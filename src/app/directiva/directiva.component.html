@@ -1,0 +1,8 @@
+<button (click)="setVisible()" class="btn btn-primary ">{{visible==false? 'Mostrar':'Ocultar'}}</button>
+
+<div class="card mt-5" >
+    <div class="card-header">Listado de cursos</div>
+     <ul class="list-group"  *ngIf="visible">
+        <li *ngFor="let directiva of directivas">{{directiva}}</li>   
+     </ul>
+</div>
