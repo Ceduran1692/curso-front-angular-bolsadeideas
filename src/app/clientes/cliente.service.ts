@@ -1,9 +1,12 @@
 import { Injectable } from "@angular/core";
 import { Cliente } from "./cliente";
 import { CLIENTES } from "./clientes.json";
-import { Observable, of } from "rxjs";
-import {map} from "rxjs/operators";
+import { Observable, of, throwError } from "rxjs";
+import {catchError, map} from "rxjs/operators";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
+import Swal from "sweetalert2";
+import { Router } from "@angular/router";
+import { ClienteResponse } from "./cliente.response";
 
 
 @Injectable()
@@ -11,34 +14,76 @@ export class ClienteService{
     private url:string= 'http://localhost:8080/cliente'
     private httpHeaders= new HttpHeaders({'Content-type':'application/json'})
     
-    constructor(private http:HttpClient){}
+    constructor(
+        private http:HttpClient,
+        private router: Router){}
 
     getClientes(): Observable<Cliente[]>{
         //llamada api simplificada
-        return this.http.get<Cliente[]>(this.url);
+        //return this.http.get<Cliente[]>(this.url);
 
         //Usando pipe y map para mapear la respuesta http
-        /*
-        return this.http.get(this.url+'/cliente/findAll').pipe(
-            map(response => response as Cliente[])
+        
+        return this.http.get<ClienteResponse>(this.url).pipe(
+            map(response => response.value as Cliente[]),
+            
+            catchError(e => {
+                this.router.navigate(['/clientes'])
+                console.error(e.error.msg)
+                Swal.fire(e.error.msg, e.error.error, 'error')
+                return throwError(e)
+            })
         );
-        */
+        
     };
 
     delete(id:number):Observable<Cliente>{
-        return this.http.delete<Cliente>(`${this.url}/${id}`)
+         
+        return this.http.delete<ClienteResponse>(`${this.url}/${id}`).pipe(
+            map(rsp => rsp.value as Cliente),
+            catchError(e => {
+                console.error(e.error.msg)
+                Swal.fire(e.error.msg, e.error.error, 'error')
+                return throwError(e)
+            })
+        );
     }
     
 
     update(cliente):Observable<Cliente>{
-        return this.http.put<Cliente>(`${this.url}/${cliente.id}`,cliente,{headers:this.httpHeaders})
+        return this.http.put<ClienteResponse>(`${this.url}/${cliente.id}`,cliente,{headers:this.httpHeaders}).pipe(
+            map(rsp => rsp.value as Cliente),
+
+            catchError(e => {
+                console.error(e.error.msg)
+                Swal.fire(e.error.msg, e.error.error, 'error')
+                return throwError(e)
+            })
+        )
     }
 
     getCliente(id):Observable<Cliente>{
-        return this.http.get<Cliente>(`${this.url}/${id}`);
+        return this.http.get<ClienteResponse>(`${this.url}/${id}`).pipe(
+            map(rsp => rsp.value as Cliente),
+
+            catchError(e => {
+                this.router.navigate(['/clientes']);
+                console.error(e.error.msg)
+                Swal.fire(e.error.msg, e.error.error, 'error')
+                return throwError(e)
+            })
+        );
     }
 
     create(cliente:Cliente):Observable<Cliente>{
-        return this.http.post<Cliente>(this.url,cliente,{headers:this.httpHeaders})
+        return this.http.post<ClienteResponse>(this.url,cliente,{headers:this.httpHeaders}).pipe(
+            map(rsp => rsp.value as Cliente),
+
+            catchError(e => {
+                console.error(e.error.msg)
+                Swal.fire(e.error.msg, e.error.error, 'error')
+                return throwError(e)
+            })
+        )
     }
 }

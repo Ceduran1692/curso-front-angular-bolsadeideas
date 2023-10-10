@@ -5,7 +5,8 @@
         <div class="my-2 text-left">
             <button class=" btn btn-rounded btn-primary" type="button" [routerLink]="['/clientes/form']">Crear cliente</button>
         </div>
-      <table class="table">
+
+      <table class="table" *ngIf="clientes?.length > 0 else errorMsg">
         <thead>
             <tr>
                 <th>id</th>
@@ -32,6 +33,8 @@
             </tr>
         </tbody>
       </table>
-
+      <ng-template class="alert alert-info" #errorMsg>
+          <em>No hay clientes registrados</em>
+      </ng-template>
     </div>
 </div>
