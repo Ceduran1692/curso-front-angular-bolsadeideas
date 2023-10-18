@@ -2,11 +2,12 @@ import { Injectable } from "@angular/core";
 import { Cliente } from "./cliente";
 import { CLIENTES } from "./clientes.json";
 import { Observable, of, throwError } from "rxjs";
-import {catchError, map} from "rxjs/operators";
+import {catchError, map, tap} from "rxjs/operators";
 import { HttpClient, HttpHeaders, HttpStatusCode } from "@angular/common/http";
 import Swal from "sweetalert2";
 import { Router } from "@angular/router";
 import { ClienteResponse } from "./cliente.response";
+import { DatePipe, formatDate } from "@angular/common";
 
 
 @Injectable()
@@ -25,7 +26,23 @@ export class ClienteService{
         //Usando pipe y map para mapear la respuesta http
         
         return this.http.get<ClienteResponse>(this.url).pipe(
-            map(response => response.value as Cliente[]),
+            tap(response => {
+                console.log('veo los clientes con tap (tap no modifica)')
+                let clientes= response.value as Cliente[];
+                clientes.forEach(cli=> console.log(cli))
+            }),
+
+            map(response => {
+                let clientes= response.value as Cliente[];
+                clientes.map(cliente => {
+                    cliente.nombre= cliente.nombre.toLowerCase();
+                    cliente.apellido= cliente.apellido.toLowerCase();
+                    cliente.email= cliente.email.toLowerCase();
+                    let datePipe= new DatePipe('es');
+                    cliente.createAt= datePipe.transform(cliente.createAt,'EEEE dd,MMMM yyyy')//formatDate(cliente.createAt,'dd-MM-yyyy', 'en-US')
+                });
+                return clientes
+            }),
             
             catchError(e => {
                 this.router.navigate(['/clientes'])
