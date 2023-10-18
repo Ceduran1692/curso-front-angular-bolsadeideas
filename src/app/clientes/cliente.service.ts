@@ -3,7 +3,7 @@ import { Cliente } from "./cliente";
 import { CLIENTES } from "./clientes.json";
 import { Observable, of, throwError } from "rxjs";
 import {catchError, map} from "rxjs/operators";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { HttpClient, HttpHeaders, HttpStatusCode } from "@angular/common/http";
 import Swal from "sweetalert2";
 import { Router } from "@angular/router";
 import { ClienteResponse } from "./cliente.response";
@@ -30,7 +30,7 @@ export class ClienteService{
             catchError(e => {
                 this.router.navigate(['/clientes'])
                 console.error(e.error.msg)
-                Swal.fire(e.error.msg, e.error.error, 'error')
+                Swal.fire(`Error: ${e.error.msg}`, e.error.error, 'error')
                 return throwError(e)
             })
         );
@@ -55,6 +55,9 @@ export class ClienteService{
             map(rsp => rsp.value as Cliente),
 
             catchError(e => {
+                if(e.status == HttpStatusCode.BadRequest){
+                    return throwError(e);
+                }
                 console.error(e.error.msg)
                 Swal.fire(e.error.msg, e.error.error, 'error')
                 return throwError(e)
@@ -80,6 +83,10 @@ export class ClienteService{
             map(rsp => rsp.value as Cliente),
 
             catchError(e => {
+
+                if(e.status == HttpStatusCode.BadRequest){
+                    return throwError(e);
+                }
                 console.error(e.error.msg)
                 Swal.fire(e.error.msg, e.error.error, 'error')
                 return throwError(e)
