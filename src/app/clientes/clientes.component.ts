@@ -4,6 +4,7 @@ import { CLIENTES } from './clientes.json';
 import { ClienteService } from './cliente.service';
 import { Observable } from 'rxjs';
 import Swal from 'sweetalert2';
+import { ActivatedRoute } from '@angular/router';
 
 
 @Component({
@@ -13,15 +14,29 @@ import Swal from 'sweetalert2';
 export class ClientesComponent implements OnInit{
   
   clientes: Cliente[];
+  page:number;
+  paginator: any;
   
-  constructor(private service:ClienteService){}
+  constructor(
+    private service:ClienteService,
+    private activatedRoute:ActivatedRoute
+    ){}
 
 
   ngOnInit(): void {
-    this.service.getClientes().subscribe(
-      clientes => this.clientes= clientes
-    );
+    this.activatedRoute.params.subscribe( params=>{
+    this.page= (params['page']==undefined)? 0: +params['page']; //El operador + antes de una variable sirve para castearla a number
+    this.service.getClientes(this.page).subscribe(
+      (response) =>{ 
+      console.log(`response: ${response}`)
+
+      this.clientes= response.value.content as Cliente[];
+      console.log(`clientes: ${this.clientes.length > 0}`)
+      this.paginator= response.value;
+      })
+    })
   }
+  
 
   delete(cliente:Cliente):void{
 
@@ -44,8 +59,8 @@ export class ClientesComponent implements OnInit{
     }).then((result) => {
       if (result.isConfirmed) {
         this.service.delete(cliente.id).subscribe( rsp=>{
-          this.service.getClientes().subscribe(
-            clientes => this.clientes= clientes
+          this.service.getClientes(this.page).subscribe(
+            (response:any) => this.clientes= response.value.content as Cliente[]
           );
             Swal.fire(
               'Borrado!',
