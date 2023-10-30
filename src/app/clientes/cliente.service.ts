@@ -3,7 +3,7 @@ import { Cliente } from "./cliente";
 import { CLIENTES } from "./clientes.json";
 import { Observable, of, throwError } from "rxjs";
 import {catchError, map, tap} from "rxjs/operators";
-import { HttpClient, HttpHeaders, HttpResponse, HttpStatusCode } from "@angular/common/http";
+import { HttpClient, HttpEvent, HttpHeaders, HttpRequest, HttpResponse, HttpStatusCode } from "@angular/common/http";
 import Swal from "sweetalert2";
 import { Router } from "@angular/router";
 import { ClienteResponse } from "./cliente.response";
@@ -111,5 +111,31 @@ export class ClienteService{
                 return throwError(e)
             })
         )
+    }
+
+    subirfoto(archivo:File, id):Observable<HttpEvent<{}>>{
+        let formData= new FormData();
+        formData.append("archivo", archivo);
+        formData.append("id",id);
+        
+        const req= new HttpRequest('POST',`${this.url}/upload`,formData,{
+            reportProgress: true
+        })
+
+        return this.http.request(req);
+        /*
+        return this.http.post<any>(`${this.url}/upload`, formData).pipe(
+            map(response => response.value as Cliente),
+            catchError(e => {
+
+                if(e.status == HttpStatusCode.BadRequest){
+                    return throwError(e);
+                }
+                console.error(e.error.msg)
+                Swal.fire(e.msg, e.error, 'error')
+                return throwError(e)
+            })
+        );
+        */
     }
 }
