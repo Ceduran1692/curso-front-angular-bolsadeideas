@@ -3,6 +3,7 @@ import { Cliente } from '../cliente';
 import { ClienteService } from '../cliente.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
+import { Region } from '../region';
 
 @Component({
   selector: 'app-form',
@@ -10,7 +11,8 @@ import Swal from 'sweetalert2';
   styleUrls: ['./form.component.css']
 })
 export class FormComponent implements OnInit{
-  cliente:Cliente= new Cliente()
+  regiones:Region[];
+  cliente:Cliente= new Cliente();
   titulo:string= "Crear Cliente"
   errores:String[]
 
@@ -21,7 +23,10 @@ export class FormComponent implements OnInit{
     ){}
 
   ngOnInit(): void {
-    this.cargarCliente()
+    this.cargarCliente();
+    this.clienteService.getRegiones().subscribe(regs=>
+        this.regiones=regs
+    )
   }
 
   cargarCliente():void{
@@ -62,5 +67,12 @@ export class FormComponent implements OnInit{
         this.errores = err.error.error as String[];
       }
     )
+  }
+
+  compare(r1:Region,r2:Region):boolean{
+    if(r1 == undefined && r2 == undefined){
+      return true;
+    }
+    return (r1 != null && r2 != null) && (r1.id===r2.id);
   }
 }

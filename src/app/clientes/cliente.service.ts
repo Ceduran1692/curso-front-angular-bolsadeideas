@@ -8,6 +8,7 @@ import Swal from "sweetalert2";
 import { Router } from "@angular/router";
 import { ClienteResponse } from "./cliente.response";
 import { DatePipe, formatDate } from "@angular/common";
+import { Region } from "./region";
 
 
 @Injectable()
@@ -77,6 +78,19 @@ export class ClienteService{
                 if(e.status == HttpStatusCode.BadRequest){
                     return throwError(e);
                 }
+                console.error(e.mensaje)
+                Swal.fire(e.mensaje, e.error, 'error')
+                return throwError(e)
+            })
+        )
+    }
+
+    getRegiones():Observable<Region[]>{
+        return this.http.get<any>(`${this.url}/regiones`).pipe(
+            map(rsp=> rsp.value as Region[]),
+            
+            catchError(e => {
+                this.router.navigate(['/clientes']);
                 console.error(e.mensaje)
                 Swal.fire(e.mensaje, e.error, 'error')
                 return throwError(e)
