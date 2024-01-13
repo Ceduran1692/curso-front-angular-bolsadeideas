@@ -7,7 +7,7 @@
         <div class="my-2 text-left">
             <button class=" btn btn-rounded btn-primary" type="button" [routerLink]="['/clientes/form']">Crear cliente</button>
         </div>
-
+  
       <table class="table" *ngIf="clientes?.length > 0 else errorMsg">
         <thead>
             <tr>
@@ -16,14 +16,15 @@
                 <th>apellido</th>
                 <th>correo</th>
                 <th>fecha</th>
-                <th>opciones</th>
+                <th *ngIf="hasRole(helperString.roleAdmin)">editar</th>
+                <th *ngIf="hasRole(helperString.roleAdmin)">eliminar</th>
             </tr>
         </thead>
         <tbody>
             <tr *ngFor="let cliente of clientes">
                 <td>
                   <img (click)="abrirModal(cliente)" 
-                  *ngIf="cliente?.foto" src="http://localhost:8080/cliente/upload/img/{{cliente.foto}}" alt="cliente.foto" class="img-thumbnail rounded"
+                  *ngIf="cliente?.foto" src="http://localhost:8080/cliente/upload/img/{{cliente.foto}}"  alt="cliente.foto" class="img-thumbnail rounded"
                   style="width: 64px; cursor: pointer;">
 
                   <img (click)="abrirModal(cliente)" 
@@ -35,10 +36,10 @@
                 <td>{{cliente.apellido}}</td>
                 <td>{{cliente.email}}</td>
                 <td>{{cliente.createAt}}</td>
-                <td>
+                <td *ngIf="hasRole(helperString.roleAdmin)">
                   <button class="btn btn-rounded btn-primary" type="button" [routerLink]="['/clientes/form/',cliente.id]">Editar</button>
                 </td>
-                <td>
+                <td *ngIf="hasRole(helperString.roleAdmin)">
                   <button class="btn btn-rounded btn-danger" (click)="delete(cliente)">Eliminar</button>
                 </td>
             </tr>

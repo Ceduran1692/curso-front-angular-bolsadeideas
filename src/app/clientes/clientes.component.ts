@@ -6,6 +6,8 @@ import { Observable } from 'rxjs';
 import Swal from 'sweetalert2';
 import { ActivatedRoute } from '@angular/router';
 import { ModalService } from './detalle/modal.service';
+import { AuthService } from '../usuarios/auth.service';
+import { HelperStrings } from '../helpers/helper.strings';
 
 
 @Component({
@@ -18,11 +20,14 @@ export class ClientesComponent implements OnInit{
   page:number;
   paginator: any;
   clienteSelect:Cliente;
-  
+  helperString:HelperStrings = new HelperStrings();
+
   constructor(
     private service:ClienteService,
     private activatedRoute:ActivatedRoute,
-    private modal:ModalService
+    private modal:ModalService,
+    private authService: AuthService,
+    
     ){}
 
 
@@ -37,7 +42,7 @@ export class ClientesComponent implements OnInit{
       console.log(`clientes: ${this.clientes.length > 0}`)
       this.paginator= response.value;
       })
-    })
+    },)
 
     this.modal.notificarUpload.subscribe(cliente=>{
       this.clientes.map(cli=>{
@@ -48,6 +53,10 @@ export class ClientesComponent implements OnInit{
     })
   }
   
+
+  hasRole(role){
+    return this.authService.usuario.roles.some(rol => rol.authority == role);
+  }
 
   delete(cliente:Cliente):void{
 
@@ -98,4 +107,5 @@ export class ClientesComponent implements OnInit{
     this.modal.abrirModal();
   }
   
+   
 }
