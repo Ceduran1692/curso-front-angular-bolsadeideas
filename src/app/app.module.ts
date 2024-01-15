@@ -20,6 +20,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import { DetalleComponent } from './clientes/detalle/detalle.component';
 import { LoginComponent } from './usuarios/login.component';
+import { authGuard } from './usuarios/guards/auth.guard';
 
 registerLocaleData(localeES,'es')
 
@@ -28,8 +29,8 @@ const routes:Routes=[
   {path: 'directivas', component: DirectivaComponent},
   {path: 'clientes', component: ClientesComponent},
   {path: 'clientes/page/:page', component: ClientesComponent},
-  {path: 'clientes/form', component: FormComponent},
-  {path: 'clientes/form/:id', component: FormComponent},
+  {path: 'clientes/form', component: FormComponent, canActivate: [authGuard]},
+  {path: 'clientes/form/:id', component: FormComponent, canActivate: [authGuard]},
   {path: 'login', component: LoginComponent}
 ]
 
