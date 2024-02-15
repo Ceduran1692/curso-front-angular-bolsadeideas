@@ -1,0 +1,44 @@
+<div class="abrir-modal animacion fadeIn" *ngIf="getModal()" >
+    <div  class="modal" tabindex="-1" style="display: block;">
+        <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title">{{titulo}}</h5>
+            <button type="button" (click)="cerrarModal()" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm mb-3">
+                            <ul class="list-group text-dark" *ngIf="cliente">
+                                <li class="list-group-item">{{cliente.nombre}}</li>
+                                <li class="list-group-item">{{cliente.apellido}}</li>
+                                <li class="list-group-item">{{cliente.email}}</li>
+                                <li class="list-group-item">{{cliente.createAt}}</li>
+                            </ul>
+                            <div class="mb-3">
+                                <label for="formFile" class="form-label">Seleccionar Foto</label>
+                                <input (change)="seleccionarFoto($event)" class="form-control" type="file" id="formFile">
+                            </div>
+                            <div class="input-group-append mb-3">
+                                <button [disabled]="!fotoSeleccionada" (click)="subirFoto()" class="btn btn-outline-secondary" type="button">Subir</button>
+                            </div>
+                            
+                            <div *ngIf="progress>0" class="progress" role="progressbar"  aria-label="Example 1px high" attr.aria-valuenow="{{progress}}" aria-valuemin="0" aria-valuemax="100">
+                                <div class="progress-bar" style="width: 100%">
+                                {{progress}}
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <div class="col-sm">
+                            <img *ngIf="cliente?.foto" src="http://localhost:8080/cliente/upload/img/{{cliente.foto}}" alt="cliente.foto" class="img-thumbnail rounded">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        </div>
+    </div>
+</div>

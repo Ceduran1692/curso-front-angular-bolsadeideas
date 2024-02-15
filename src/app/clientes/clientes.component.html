@@ -1,37 +1,53 @@
-<div class="card border-dark my-3" >
+<cliente-detalle *ngIf="clienteSelect" [cliente]="clienteSelect"></cliente-detalle>
+
+<div class="card border-dark " >
     <div class="card-header">Clientes</div>
-    <div class="card-body">
+    <div class="card-body"  style="overflow: scroll;">
       <h5 class="card-title">Listado de clientes</h5>
         <div class="my-2 text-left">
             <button class=" btn btn-rounded btn-primary" type="button" [routerLink]="['/clientes/form']">Crear cliente</button>
         </div>
-      <table class="table">
+  
+      <table class="table" *ngIf="clientes?.length > 0 else errorMsg">
         <thead>
             <tr>
-                <th>id</th>
+                <th>#</th>
                 <th>nombre</th>
                 <th>apellido</th>
                 <th>correo</th>
                 <th>fecha</th>
-                <th>opciones</th>
+                <th *ngIf="hasRole(helperString.roleAdmin)">editar</th>
+                <th *ngIf="hasRole(helperString.roleAdmin)">eliminar</th>
             </tr>
         </thead>
         <tbody>
             <tr *ngFor="let cliente of clientes">
-                <td>{{cliente.id}}</td>
+                <td>
+                  <img (click)="abrirModal(cliente)" 
+                  *ngIf="cliente?.foto" src="http://localhost:8080/cliente/upload/img/{{cliente.foto}}"  alt="cliente.foto" class="img-thumbnail rounded"
+                  style="width: 64px; cursor: pointer;">
+
+                  <img (click)="abrirModal(cliente)" 
+                  *ngIf="!cliente?.foto" src="http://localhost:8080/images/user.png" alt="cliente.foto" class="img-thumbnail rounded"
+                  style="width: 64px; cursor: pointer;">
+
+                </td>
                 <td>{{cliente.nombre}}</td>
                 <td>{{cliente.apellido}}</td>
                 <td>{{cliente.email}}</td>
                 <td>{{cliente.createAt}}</td>
-                <td>
+                <td *ngIf="hasRole(helperString.roleAdmin)">
                   <button class="btn btn-rounded btn-primary" type="button" [routerLink]="['/clientes/form/',cliente.id]">Editar</button>
                 </td>
-                <td>
+                <td *ngIf="hasRole(helperString.roleAdmin)">
                   <button class="btn btn-rounded btn-danger" (click)="delete(cliente)">Eliminar</button>
                 </td>
             </tr>
         </tbody>
       </table>
-
+      <ng-template class="alert alert-info" #errorMsg>
+          <em>No hay clientes registrados</em>
+      </ng-template>
     </div>
+    <nav-paginator *ngIf="paginator" [paginator]="paginator" class="d-flex justify-content-center align-items-center pt-3"></nav-paginator>
 </div>
