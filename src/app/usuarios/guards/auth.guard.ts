@@ -8,8 +8,12 @@ export const authGuard: CanActivateFn = () => {
   let canActivate;
 
   if(authService.isAuthenticated()){
-    canActivate= true
-  
+    canActivate= true;
+    if(authService.isTokenExpired()){
+      canActivate= false
+      authService.logOut;
+      route.navigate(['/login']);
+    }
   }else{
     route.navigate(['/login'])
     canActivate= false

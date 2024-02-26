@@ -55,7 +55,7 @@ export class ClientesComponent implements OnInit{
   
 
   hasRole(role){
-    return this.authService.usuario.roles.some(rol => rol.authority == role);
+    return this.authService.hasRole(role);
   }
 
   delete(cliente:Cliente):void{

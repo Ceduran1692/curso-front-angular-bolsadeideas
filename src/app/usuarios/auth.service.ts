@@ -7,6 +7,7 @@ import { Usuario } from './usuario';
   providedIn: 'root'
 })
 export class AuthService {
+  
   private httpHeaders= new HttpHeaders({'Content-type':'application/json'})
   private url:string= 'http://localhost:8080/auth';  
   private _usuario:Usuario= null;
@@ -37,6 +38,11 @@ export class AuthService {
    
     return this._token;
  }
+
+ hasRole(role: string) {
+  return (this._usuario)?this._usuario.roles.some(rol => rol.authority == role):false;
+}
+
    guardarUsuario(jwt:string){
       let payload= this.obtenerDatosToken(jwt);
 
@@ -62,6 +68,14 @@ export class AuthService {
    isAuthenticated(){
     let payload= this.obtenerDatosToken(this.token)
     return ( payload != null && payload.nombre.length > 0)
+  }
+
+  isTokenExpired(){
+    let payload= this.obtenerDatosToken(this._token);
+    let now= new Date().getTime() /1000;
+    console.log('now: '+ now);
+    console.log('token exp: '+ payload.exp);
+    return payload.exp < now;
   }
 
   logOut():void{

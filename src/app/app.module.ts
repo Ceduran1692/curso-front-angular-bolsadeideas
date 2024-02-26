@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule} from '@angular/common/http'
+import { HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http'
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
@@ -21,6 +21,8 @@ import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import { DetalleComponent } from './clientes/detalle/detalle.component';
 import { LoginComponent } from './usuarios/login.component';
 import { authGuard } from './usuarios/guards/auth.guard';
+import { roleGuard } from './usuarios/guards/role.guard';
+import { AuthInterceptor } from './usuarios/interceptors/auth-interceptor';
 
 registerLocaleData(localeES,'es')
 
@@ -29,8 +31,8 @@ const routes:Routes=[
   {path: 'directivas', component: DirectivaComponent},
   {path: 'clientes', component: ClientesComponent},
   {path: 'clientes/page/:page', component: ClientesComponent},
-  {path: 'clientes/form', component: FormComponent, canActivate: [authGuard]},
-  {path: 'clientes/form/:id', component: FormComponent, canActivate: [authGuard]},
+  {path: 'clientes/form', component: FormComponent, canActivate: [authGuard, roleGuard],data:{role:"ROLE_ADMINISTRATOR"}},
+  {path: 'clientes/form/:id', component: FormComponent, canActivate: [authGuard, roleGuard],data:{role:"ROLE_ADMINISTRATOR"}},
   {path: 'login', component: LoginComponent}
 ]
 
@@ -58,7 +60,7 @@ const routes:Routes=[
     MatMomentDateModule,
     
   ],
-  providers: [ClienteService, DirectivaService],
+  providers: [ClienteService, DirectivaService,{provide: HTTP_INTERCEPTORS,useClass:AuthInterceptor,multi:true }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
